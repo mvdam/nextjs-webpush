@@ -90,3 +90,23 @@ const setup = (onSubscribe: (subscription: PushSubscription) => void) => {
   });
   // });
 };
+
+// -------- NEW BELOW ------------ //
+
+const registerServiceWorker = async () => {
+  return navigator.serviceWorker.register("/service.js");
+};
+
+const requestNotificationPermission = async () => {
+  const permission = await window.Notification.requestPermission();
+
+  if (permission !== "granted") {
+    throw new Error("Permission not granted for Notification");
+  }
+};
+
+const main = async () => {
+  const swRegistration = await registerServiceWorker();
+  const permission = await requestNotificationPermission();
+};
+// main(); we will not call main in the beginning.
