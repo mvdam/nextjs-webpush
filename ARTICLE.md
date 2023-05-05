@@ -1,3 +1,5 @@
+WHY WHAT WHO?
+
 # Native Apps Are Dead - WebPush on iOS with Next.js!
 
 This article walks you through the process of how to implement Push Notifications by using the WebPush API's. We start of with a short introduction about PWA's and WebPush followed by a tutorial on how to implement it yourself. We'll be using React & Next.js during this tutorial.
