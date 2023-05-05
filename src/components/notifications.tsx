@@ -33,6 +33,9 @@ export default function Notifications() {
       <button onClick={sendNewLocalNotification} className={styles.button}>
         Local Notification
       </button>
+      <button onClick={resetServiceWorker} className={styles.button}>
+        Reset SW
+      </button>
     </>
   );
 }
@@ -47,6 +50,16 @@ const requestNotificationPermission = async () => {
   if (permission !== "granted") {
     throw new Error("Permission not granted for Notification");
   }
+};
+
+const resetServiceWorker = () => {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+
+    registerServiceWorker();
+  });
 };
 
 const setup = async () => {
