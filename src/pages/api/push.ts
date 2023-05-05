@@ -1,9 +1,22 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import {
   getSubscriptionFromDb,
   saveSubscriptionToDb,
 } from "@/utils/db/in-memory-db";
-import { NextApiRequest } from "next";
 import webpush, { PushSubscription } from "web-push";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "POST") {
+    const response = await POST(req);
+    return res.status(200).json(response);
+  }
+
+  const response = await GET(req);
+  return res.status(200).json(response);
+}
 
 const vapidKeys = {
   publicKey:
@@ -23,26 +36,20 @@ const sendNotification = (subscription: PushSubscription, dataToSend: any) => {
 
 // Save Subscription
 export async function POST(request: NextApiRequest) {
-  console.log("POST", JSON.stringify(request));
-
-  request.body;
-
   const subscription = request.body as PushSubscription | null;
   if (!subscription) {
     console.error("No subscription was provided!");
     return;
   }
 
-  console.log("subscription", subscription.endpoint);
-
   const updatedDb = await saveSubscriptionToDb(subscription);
   const storedEndpoint = updatedDb.subscription?.endpoint;
 
-  return new Response(JSON.stringify({ message: "success", storedEndpoint }));
+  return { message: "success", storedEndpoint };
 }
 
 // Send Notification
-export async function GET(_: Request) {
+export async function GET(_: NextApiRequest) {
   const subscription = getSubscriptionFromDb();
   if (!subscription) {
     console.error("No subscription was stored!");
@@ -52,5 +59,5 @@ export async function GET(_: Request) {
   const message = "Hello World";
   sendNotification(subscription, message);
 
-  return new Response(JSON.stringify({ message: "message sent" }));
+  return { message: "message sent" };
 }

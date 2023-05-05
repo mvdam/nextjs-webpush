@@ -17,7 +17,7 @@ const urlB64ToUint8Array = (base64String) => {
 const saveSubscription = async (subscription) => {
   const SERVER_URL = "http://localhost:3000/api/push";
   const response = await fetch(SERVER_URL, {
-    method: "post",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
