@@ -53,7 +53,7 @@ const requestNotificationPermission = async () => {
 };
 
 const resetServiceWorker = () => {
-  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
     for (let registration of registrations) {
       registration.unregister();
     }
