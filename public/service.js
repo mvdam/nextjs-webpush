@@ -15,7 +15,7 @@ const urlB64ToUint8Array = (base64String) => {
 
 // FIXME: can we do this in the frontend as well?
 const saveSubscription = async (subscription) => {
-  const SERVER_URL = "http://localhost:4000/save-subscription";
+  const SERVER_URL = "http://localhost:3000/api/push";
   const response = await fetch(SERVER_URL, {
     method: "post",
     headers: {
@@ -34,8 +34,6 @@ self.addEventListener("activate", async () => {
     const options = { applicationServerKey, userVisibleOnly: true };
     const subscription = await self.registration.pushManager.subscribe(options);
 
-    console.log({ subscription });
-
     const response = await saveSubscription(subscription);
     console.log(response);
   } catch (err) {
@@ -44,6 +42,8 @@ self.addEventListener("activate", async () => {
 });
 
 self.addEventListener("push", function (event) {
+  console.log("push received");
+
   if (event.data) {
     console.log("Push event!! ", event.data.text());
     showLocalNotification("Yolo", event.data.text(), self.registration);

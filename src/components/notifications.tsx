@@ -6,10 +6,6 @@ import styles from "../app/page.module.css";
 export default function Notifications() {
   const [permission, setPermission] = useState(Notification.permission);
 
-  const onSubscribe = (subscription: PushSubscription) => {
-    console.log(subscription);
-  };
-
   useEffect(() => {
     setup();
   }, []);
@@ -40,8 +36,6 @@ export default function Notifications() {
     </>
   );
 }
-
-// -------- NEW BELOW ------------ //
 
 const registerServiceWorker = async () => {
   return navigator.serviceWorker.register("/service.js");
