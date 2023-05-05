@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
-  getSubscriptionFromDb,
+  getSubscriptionsFromDb,
   saveSubscriptionToDb,
 } from "@/utils/db/in-memory-db";
 import webpush, { PushSubscription } from "web-push";
@@ -43,21 +43,21 @@ export async function POST(request: NextApiRequest) {
   }
 
   const updatedDb = await saveSubscriptionToDb(subscription);
-  const storedEndpoint = updatedDb.subscription?.endpoint;
 
-  return { message: "success", storedEndpoint };
+  return { message: "success", updatedDb };
 }
 
 // Send Notification
 export async function GET(_: NextApiRequest) {
-  const subscription = getSubscriptionFromDb();
-  if (!subscription) {
-    console.error("No subscription was stored!");
-    return new Response(JSON.stringify({ message: "no subscription yet!" }));
-  }
+  const subscriptions = getSubscriptionsFromDb();
 
-  const message = "Hello World";
-  sendNotification(subscription, message);
+  subscriptions.forEach((s) => {
+    const payload = JSON.stringify({
+      title: "WebPush Notification!",
+      body: "Hello World",
+    });
+    sendNotification(s, payload);
+  });
 
-  return { message: "message sent" };
+  return { message: `${subscriptions.length} messages sent!` };
 }

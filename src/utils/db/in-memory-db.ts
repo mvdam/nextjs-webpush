@@ -1,19 +1,19 @@
 import { PushSubscription } from "web-push";
 
 type DummyDb = {
-  subscription: PushSubscription | null;
+  subscriptions: PushSubscription[];
 };
 
-const dummyDb: DummyDb = { subscription: null };
+export const dummyDb: DummyDb = { subscriptions: [] };
 
 // fake Promise to simulate async call
 export const saveSubscriptionToDb = async (
   subscription: PushSubscription
 ): Promise<DummyDb> => {
-  dummyDb.subscription = subscription;
+  dummyDb.subscriptions.push(subscription);
   return dummyDb;
 };
 
-export const getSubscriptionFromDb = () => {
-  return dummyDb.subscription;
+export const getSubscriptionsFromDb = () => {
+  return dummyDb.subscriptions;
 };

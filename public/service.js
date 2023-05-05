@@ -45,12 +45,11 @@ self.addEventListener("activate", async () => {
   }
 });
 
-self.addEventListener("push", function (event) {
-  console.log("push received");
-
+self.addEventListener("push", async (event) => {
+  console.log({ event });
   if (event.data) {
-    console.log("Push event!! ", event.data.text());
-    showLocalNotification("Yolo", event.data.text(), self.registration);
+    const eventData = await event.data.json();
+    showLocalNotification(eventData.title, eventData.body, self.registration);
   } else {
     console.log("Push event but no data");
   }
@@ -59,6 +58,7 @@ self.addEventListener("push", function (event) {
 const showLocalNotification = (title, body, swRegistration) => {
   const options = {
     body,
+    icon: "/icons/icon-192.png",
   };
   swRegistration.showNotification(title, options);
 };
