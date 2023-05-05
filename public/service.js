@@ -15,8 +15,12 @@ const urlB64ToUint8Array = (base64String) => {
 
 // FIXME: can we do this in the frontend as well?
 const saveSubscription = async (subscription) => {
-  const SERVER_URL = "http://localhost:3000/api/push";
-  const response = await fetch(SERVER_URL, {
+  const LOCAL_URL = "http://localhost:3000/api/push";
+  const SERVER_URL =
+    "https://icy-coast-05bf8ab03.3.azurestaticapps.net/api/push";
+  const BACKEND_URL =
+    process.env.NODE_ENV === "production" ? SERVER_URL : LOCAL_URL;
+  const response = await fetch(BACKEND_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
