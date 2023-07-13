@@ -12,17 +12,17 @@ export default function Notifications() {
     setup()
   }, [])
 
-  const requestPermission = useCallback(() => {
+  const requestPermission = () => {
     Notification.requestPermission().then(setPermission)
-  }, [])
+  }
 
-  const sendNewLocalNotification = useCallback(() => {
+  const sendNewLocalNotification = () => {
     if (permission !== 'granted') {
       return
     }
 
     new Notification('Local notification!')
-  }, [permission])
+  }
 
   return (
     <>
@@ -50,19 +50,6 @@ const requestNotificationPermission = async () => {
   if (permission !== 'granted') {
     throw new Error('Permission not granted for Notification')
   }
-}
-
-const unregisterServiceWorker = async () => {
-  return navigator.serviceWorker.getRegistrations().then((registrations) => {
-    for (let registration of registrations) {
-      registration.unregister()
-    }
-  })
-}
-
-const resetServiceWorker = async () => {
-  await unregisterServiceWorker()
-  registerServiceWorker()
 }
 
 const setup = async () => {
