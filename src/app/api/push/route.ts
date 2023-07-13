@@ -1,5 +1,4 @@
-import { NextApiRequest } from 'next'
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import {
   getSubscriptionsFromDb,
   saveSubscriptionToDb,
@@ -22,7 +21,7 @@ const sendNotification = (subscription: PushSubscription, dataToSend: any) => {
   webpush.sendNotification(subscription, dataToSend)
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const subscription = (await request.json()) as PushSubscription | null
 
   if (!subscription) {
@@ -35,7 +34,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ message: 'success', updatedDb })
 }
 
-export async function GET(_: NextApiRequest) {
+export async function GET(_: NextRequest) {
   const subscriptions = await getSubscriptionsFromDb()
 
   subscriptions.forEach((s) => {

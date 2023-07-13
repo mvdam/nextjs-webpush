@@ -54,7 +54,7 @@ For Push notifications to work we need four important parts:
 
    The application needs te be deployed on a server in order for Push Notifications to work on real mobile devices instead of only running it locally. We're going to use Azure Static Web Apps to build and deploy our app to the cloud.
 
-To make our live easy we're going to use Next.js for this tutorial. Next.js is a great framework for having both a frontend and a backend together. It offers features such as Server Side Rendering, Static Site Generation and easy API creation.
+To make our live easy we're going to use Next.js for this tutorial. Next.js is a great framework for having both a frontend and a backend together. It offers features such as Server Side Rendering, Static Site Generation and easy API creation. in this tutorial we'll be using the new [App Router](https://nextjs.org/docs/app/building-your-application/routing) to its full extend!
 
 ## Setup Next.js App
 
