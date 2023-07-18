@@ -5,14 +5,5 @@ const Notifications = dynamic(() => import('@/app/components/notifications'), {
 })
 
 export default function Home() {
-  const notificationsSupported = () =>
-    'Notification' in window &&
-    'serviceWorker' in navigator &&
-    'PushManager' in window
-
-  if (!notificationsSupported()) {
-    return <div>Please install this app to your home screen first!</div>
-  }
-
   return <Notifications />
 }
