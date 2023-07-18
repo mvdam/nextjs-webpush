@@ -1,7 +1,3 @@
-TODOS:
-
-Extend technical docs for example project, docker, commands...
-
 # Native Apps Are Dead - WebPush on iOS with Next.js!
 
 This article walks you through the process of how to implement push notifications by using WebPush APIs. We start with a short introduction about PWAs and WebPush followed by a tutorial on how to implement it yourself. We'll be using TypeScript, React, Next.js, and Azure Static Web Apps in this tutorial.
@@ -681,10 +677,6 @@ Thanks for reading and until the next one! Please reach out for questions or fee
 - https://en.wikipedia.org/wiki/Progressive_web_app
 - https://learn.microsoft.com/en-us/azure/static-web-apps/deploy-nextjs-hybrid
 - https://web.dev/push-notifications-web-push-protocol/
-
-## Image inspiration
-
-https://unsplash.com/s/photos/notification
 
 ## Example project Github
 
