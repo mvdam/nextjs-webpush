@@ -5,15 +5,15 @@ import styles from '../page.module.css'
 import { CONFIG } from '@/config'
 import Link from 'next/link'
 
+const notificationsSupported = () =>
+  'Notification' in window &&
+  'serviceWorker' in navigator &&
+  'PushManager' in window
+
 export default function Notifications() {
   const [permission, setPermission] = useState(
     Notification?.permission || 'default'
   )
-
-  const notificationsSupported = () =>
-    'Notification' in window &&
-    'serviceWorker' in navigator &&
-    'PushManager' in window
 
   if (!notificationsSupported()) {
     return <div>Please install this app to your home screen first!</div>
@@ -68,6 +68,10 @@ export default function Notifications() {
   }
 
   const requestPermission = async () => {
+    if (!notificationsSupported()) {
+      return
+    }
+
     const receivedPermission = await Notification.requestPermission()
     setPermission(receivedPermission)
 
@@ -77,7 +81,7 @@ export default function Notifications() {
   }
 
   const sendNewLocalNotification = () => {
-    if (permission !== 'granted') {
+    if (permission !== 'granted' || !notificationsSupported()) {
       return
     }
 
