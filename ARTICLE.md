@@ -267,10 +267,13 @@ export default function Notifications() {
 }
 ```
 
-At this point your `Notifications` component should look like this:
+At this point your `Notifications.tsx` file should look like this:
 
 ```tsx
+'use client'
+
 import { useEffect } from 'react'
+import { CONFIG } from '@/config'
 
 export default function Notifications() {
   useEffect(() => {
@@ -278,6 +281,53 @@ export default function Notifications() {
   }, [])
 
   return <h3>WebPush PWA</h3>
+}
+
+const registerServiceWorker = async () => {
+  return navigator.serviceWorker.register('/service.js')
+}
+
+const setup = async () => {
+  const swRegistration = await registerServiceWorker()
+  await Notification.requestPermission()
+
+  try {
+    const applicationServerKey = urlB64ToUint8Array(CONFIG.PUBLIC_KEY)
+    const options = { applicationServerKey, userVisibleOnly: true }
+    const subscription = await swRegistration.pushManager.subscribe(options)
+
+    await saveSubscription(subscription)
+
+    console.log({ subscription })
+  } catch (err) {
+    console.error('Error', err)
+  }
+}
+
+// encode the base64 public key to Array buffer
+const urlB64ToUint8Array = (base64String: string) => {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+
+const saveSubscription = async (subscription: PushSubscription) => {
+  const ORIGIN = window.location.origin
+  const BACKEND_URL = `${ORIGIN}/api/push`
+
+  const response = await fetch(BACKEND_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(subscription),
+  })
+  return response.json()
 }
 ```
 
