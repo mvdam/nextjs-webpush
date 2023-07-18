@@ -11,7 +11,7 @@ A Progressive Web App is a type of application software delivered through the we
 - Camera & microphone
 - And more...
 
-If you want to learn more about PWAs, check one of the other articles on ToTheRoot: https://www.totheroot.nl/search?tag=pwa.
+If you want to learn more about PWAs, check one of the other articles on ToTheRoot: https://www.totheroot.io/search?tag=pwa.
 
 ## When PWA's were born
 
