@@ -29,6 +29,8 @@ This example app is currently deployed on Azure Static Web Apps: https://icy-isl
 
 Instances are shut down when not used for some time. It could take a few seconds to start the app when clicking the link.
 
+<img src="./assets/qr-demo.png" alt="Link to example app.">
+
 ### Questions / Feedback
 
 Feel free to open an issue on this repository when you have a question or feedback. Much appreciated!
