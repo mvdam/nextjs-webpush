@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import styles from '../page.module.css'
 import { CONFIG } from '@/config'
 import Link from 'next/link'
@@ -12,7 +12,7 @@ const notificationsSupported = () =>
 
 export default function Notifications() {
   const [permission, setPermission] = useState(
-    Notification?.permission || 'default'
+    window?.Notification?.permission || 'default'
   )
 
   if (!notificationsSupported()) {
@@ -72,20 +72,12 @@ export default function Notifications() {
       return
     }
 
-    const receivedPermission = await Notification.requestPermission()
+    const receivedPermission = await window?.Notification.requestPermission()
     setPermission(receivedPermission)
 
     if (receivedPermission === 'granted') {
       subscribe()
     }
-  }
-
-  const sendNewLocalNotification = () => {
-    if (permission !== 'granted' || !notificationsSupported()) {
-      return
-    }
-
-    new Notification('Local notification!')
   }
 
   return (
@@ -95,9 +87,6 @@ export default function Notifications() {
       </h3>
       <button onClick={requestPermission} className={styles.button}>
         Request permission and subscribe
-      </button>
-      <button onClick={sendNewLocalNotification} className={styles.button}>
-        Local Notification
       </button>
       <Link href="/debug">Debug options</Link>
     </>
