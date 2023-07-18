@@ -8,13 +8,13 @@ import Link from 'next/link'
 export default function Notifications() {
   const [permission, setPermission] = useState(Notification.permission)
 
-  useEffect(() => {
-    setup()
-  }, [])
-
   const requestPermission = async () => {
     const receivedPermission = await Notification.requestPermission()
     setPermission(receivedPermission)
+
+    if (receivedPermission === 'granted') {
+      subscribe()
+    }
   }
 
   const sendNewLocalNotification = () => {
@@ -31,7 +31,7 @@ export default function Notifications() {
         Notifications permission status: {permission}
       </h3>
       <button onClick={requestPermission} className={styles.button}>
-        Request permission
+        Request permission and subscribe
       </button>
       <button onClick={sendNewLocalNotification} className={styles.button}>
         Local Notification
@@ -45,9 +45,8 @@ const registerServiceWorker = async () => {
   return navigator.serviceWorker.register('/service.js')
 }
 
-const setup = async () => {
+const subscribe = async () => {
   const swRegistration = await registerServiceWorker()
-  await Notification.requestPermission()
 
   try {
     const applicationServerKey = urlB64ToUint8Array(CONFIG.PUBLIC_KEY)
