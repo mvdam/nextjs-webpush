@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from '../page.module.css'
 import { CONFIG } from '@/config'
 import Link from 'next/link'
@@ -12,8 +12,9 @@ export default function Notifications() {
     setup()
   }, [])
 
-  const requestPermission = () => {
-    Notification.requestPermission().then(setPermission)
+  const requestPermission = async () => {
+    const receivedPermission = await Notification.requestPermission()
+    setPermission(receivedPermission)
   }
 
   const sendNewLocalNotification = () => {
@@ -44,17 +45,9 @@ const registerServiceWorker = async () => {
   return navigator.serviceWorker.register('/service.js')
 }
 
-const requestNotificationPermission = async () => {
-  const permission = await window.Notification.requestPermission()
-
-  if (permission !== 'granted') {
-    throw new Error('Permission not granted for Notification')
-  }
-}
-
 const setup = async () => {
   const swRegistration = await registerServiceWorker()
-  await requestNotificationPermission()
+  await Notification.requestPermission()
 
   try {
     const applicationServerKey = urlB64ToUint8Array(CONFIG.PUBLIC_KEY)

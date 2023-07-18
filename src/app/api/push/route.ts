@@ -6,20 +6,11 @@ import {
 import webpush, { PushSubscription } from 'web-push'
 import { CONFIG } from '@/config'
 
-const vapidKeys = {
-  publicKey: CONFIG.PUBLIC_KEY,
-  privateKey: CONFIG.PRIVATE_KEY,
-}
-
 webpush.setVapidDetails(
   'mailto:test@example.com',
-  vapidKeys.publicKey,
-  vapidKeys.privateKey
+  CONFIG.PUBLIC_KEY,
+  CONFIG.PRIVATE_KEY
 )
-
-const sendNotification = (subscription: PushSubscription, dataToSend: any) => {
-  webpush.sendNotification(subscription, dataToSend)
-}
 
 export async function POST(request: NextRequest) {
   const subscription = (await request.json()) as PushSubscription | null
@@ -42,7 +33,7 @@ export async function GET(_: NextRequest) {
       title: 'WebPush Notification!',
       body: 'Hello World',
     })
-    sendNotification(s, payload)
+    webpush.sendNotification(s, payload)
   })
 
   return NextResponse.json({
