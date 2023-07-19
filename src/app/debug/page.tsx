@@ -2,6 +2,10 @@
 
 import Link from 'next/link'
 import styles from '../page.module.css'
+import {
+  resetServiceWorker,
+  unregisterServiceWorkers,
+} from '@/utils/sw/service-worker'
 
 export default function DebugActions() {
   return (
@@ -10,24 +14,10 @@ export default function DebugActions() {
       <button onClick={resetServiceWorker} className={styles.button}>
         Reset SW
       </button>
-      <button onClick={unregisterServiceWorker} className={styles.button}>
+      <button onClick={unregisterServiceWorkers} className={styles.button}>
         Remove SW
       </button>
       <Link href="/">Back to home</Link>
     </>
   )
-}
-
-const registerServiceWorker = async () => {
-  return navigator.serviceWorker.register('/service.js')
-}
-
-const unregisterServiceWorker = async () => {
-  const registrations = await navigator.serviceWorker.getRegistrations()
-  await Promise.all(registrations.map((r) => r.unregister()))
-}
-
-const resetServiceWorker = async () => {
-  await unregisterServiceWorker()
-  registerServiceWorker()
 }

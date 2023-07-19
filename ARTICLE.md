@@ -105,7 +105,7 @@ The first part of this code block is to listen for the `push` event. Every time 
 
 For the `showLocalNotification` function we need a `title`, `body` and the `swRegistration` (Service Worker Registration) to be able to show the notification on the device. We can also provide an icon to show in the notification. In this case, we use the app icon. By calling the `showNotification` method on the Service Worker Registration we show the notification on the screen of the receiving device:
 
-<img src="./assets/notification-on-device.PNG" alt="Example of Push Notification shown on device.">
+<img src="./assets/received-notification.PNG" alt="Example of Push Notification shown on device.">
 
 That's all we need for the Service Worker. Quite simple right? Let's move on to the next part!
 
@@ -128,6 +128,26 @@ export default function Notifications() {
 ```
 
 The first line `use client` lets Next.js know that this component needs to be rendered on the client side instead of the server side. We need this to be able to use a couple of browser APIs for Notifications. For now, we only show a `h3` heading.
+
+Because Apple only gives you access to the Notification APIs in the browser when the PWA is installed, we need to add some code to check if all the required APIs are accessible. Let's extend our component with some boilerplate:
+
+```tsx
+const notificationsSupported = () =>
+  'Notification' in window &&
+  'serviceWorker' in navigator &&
+  'PushManager' in window
+
+export default function Notifications() {
+  if (!notificationsSupported()) {
+    return <h3>Please install the PWA first!</h3>
+  }
+
+  return <h3>WebPush PWA</h3>
+}
+```
+
+First we define a helper function above our component: `notificationsSupported`. We check if we have access to the `Notification`, `serviceWorker` and `PushManager` API. If not, we return a little instruction for the users of our app to let them first install the PWA on their device.
+Further on in this tutorial you will also see usages of `window?.Notification.requestPermission()` by using the [optional chaining operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining). This is required because we can only access `Notification.requestPermission()` when the PWA is installed on the device, but the code itself is instantiated also when not installed.
 
 ### Register Service Worker
 
@@ -200,20 +220,22 @@ Also, it's highly recommended to store these keys in environment variables inste
 
 If you want to learn more about how Web Push encryption works I can recommend this article from Matt Gaunt: [The Web Push Protocol](https://web.dev/push-notifications-web-push-protocol/).
 
-### Setup function
+### Subscribe function
 
-Now we are ready to combine the earlier steps! In our `notifications.tsx` file we're going to create a `setup` function to register the Service Worker, subscribe to notifications, and send the subscription to our backend:
+Now we are ready to combine the earlier steps! In our `notifications.tsx` file we're going to create a `subscribe` function to register the Service Worker, subscribe to notifications, and send the subscription to our backend:
 
 ```ts
 import { CONFIG } from '@/config'
 
-const setup = async () => {
+const subscribe = async () => {
   const swRegistration = await registerServiceWorker()
-  await Notification.requestPermission()
+  await window?.Notification.requestPermission()
 
   try {
-    const applicationServerKey = urlB64ToUint8Array(CONFIG.PUBLIC_KEY)
-    const options = { applicationServerKey, userVisibleOnly: true }
+    const options = {
+      applicationServerKey: CONFIG.PUBLIC_KEY,
+      userVisibleOnly: true,
+    }
     const subscription = await swRegistration.pushManager.subscribe(options)
 
     await saveSubscription(subscription)
@@ -223,75 +245,68 @@ const setup = async () => {
     console.error('Error', err)
   }
 }
-
-// encode the base64 public key to Array buffer
-const urlB64ToUint8Array = (base64String: string) => {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
-  const rawData = atob(base64)
-  const outputArray = new Uint8Array(rawData.length)
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i)
-  }
-  return outputArray
-}
 ```
 
 First, we register the Service Worker by calling the function we've created earlier. Then we use the `requestPermission` method on the browser `Notification` API to request the user permission to send notifications:
 
-<img src="./assets/permission.PNG" alt="Example of requesting permission for sending notifications in iOS.">
+<img src="./assets/allow-notifications.PNG" alt="Example of requesting permission for sending notifications in iOS.">
 
-Then we grab our public key from the config file we've created earlier and convert it to an Array Buffer by using the `urlB64ToUint8Array` helper function. Followed by creating the subscription by using the `PushManager` API in the web browser: `swRegistration.pushManager.subscribe(...)`.
+Then we create the subscription by using the `PushManager` API in the web browser: `swRegistration.pushManager.subscribe(...)`. We provide our public key from our config file to the subscribe options.
 
 The last step is then to save the subscription to the backend by calling the `saveSubscription` function with our newly created subscription.
 
 ### Finishing component
 
-Now we're ready to finish our Notifications component by calling the `setup` function when the component is loaded. We use the `useEffect` hook from React to do this. First, we need to import this. Add the following line to the top of `notifications.tsx`:
+Now we're ready to finish our Notifications component by calling the `subscribe` function when a button is clicked. Let's change the return statement of our component:
 
-```ts
-import { useEffect } from 'react'
-```
-
-Then we add the effect to our component:
-
-```ts
+```tsx
 export default function Notifications() {
-  useEffect(() => {
-    setup()
-  }, [])
-
   // ...
+  return <>
+   <h3>WebPush PWA</h3>
+   <button onClick={subscribe}>Ask permission and subscribe!</>
+  </>
 }
 ```
+
+We defined a HTML `button` element which calls our `subscribe` function when the button is clicked.
 
 At this point your `Notifications.tsx` file should look like this:
 
 ```tsx
 'use client'
 
-import { useEffect } from 'react'
 import { CONFIG } from '@/config'
 
-export default function Notifications() {
-  useEffect(() => {
-    setup()
-  }, [])
+const notificationsSupported = () =>
+  'Notification' in window &&
+  'serviceWorker' in navigator &&
+  'PushManager' in window
 
-  return <h3>WebPush PWA</h3>
+export default function Notifications() {
+  if (!notificationsSupported()) {
+    return <h3>Please install the PWA first!</h3>
+  }
+
+  return <>
+   <h3>WebPush PWA</h3>
+   <button onClick={subscribe}>Ask permission and subscribe!</>
+  </>
 }
 
 const registerServiceWorker = async () => {
   return navigator.serviceWorker.register('/service.js')
 }
 
-const setup = async () => {
+const subscribe = async () => {
   const swRegistration = await registerServiceWorker()
-  await Notification.requestPermission()
+  await window?.Notification.requestPermission()
 
   try {
-    const applicationServerKey = urlB64ToUint8Array(CONFIG.PUBLIC_KEY)
-    const options = { applicationServerKey, userVisibleOnly: true }
+    const options = {
+      applicationServerKey: CONFIG.PUBLIC_KEY,
+      userVisibleOnly: true,
+    }
     const subscription = await swRegistration.pushManager.subscribe(options)
 
     await saveSubscription(subscription)
@@ -300,18 +315,6 @@ const setup = async () => {
   } catch (err) {
     console.error('Error', err)
   }
-}
-
-// encode the base64 public key to Array buffer
-const urlB64ToUint8Array = (base64String: string) => {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
-  const rawData = atob(base64)
-  const outputArray = new Uint8Array(rawData.length)
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i)
-  }
-  return outputArray
 }
 
 const saveSubscription = async (subscription: PushSubscription) => {
@@ -328,8 +331,6 @@ const saveSubscription = async (subscription: PushSubscription) => {
   return response.json()
 }
 ```
-
-Please note that for simplicity we call the `setup` function every time the component is loaded. This is also executed whenever the page is refreshed. It speaks for itself that this is not the most ideal solution but it's simpler in the scope of this tutorial.
 
 ### Show Notifications component
 
@@ -573,7 +574,7 @@ $ next dev
 - ready started server on 0.0.0.0:3000, url: http://localhost:3000
 ```
 
-If we now open http://localhost:3000 in our browser we should see our frontend running! Because our setup function is automatically executed when the page loads it should ask you for permission to show notifications when you open the frontend for the first time. Approve them to be able to receive notifications.
+If we now open http://localhost:3000 in our browser we should see our frontend running!
 
 <img src="./assets/permission-local.png" alt="Prompt for allowing notifications in Chrome." />
 
@@ -644,15 +645,18 @@ You can find the workflow file for the example project [here](https://github.com
 
 ## Install our PWA on iOS
 
-To finish the whole loop we need to open our app on an iOS or Android device. Open https://icy-island-0a0b23d03.3.azurestaticapps.net/ on your phone and make sure to install it / Add to Home Screen:
+To finish the whole loop we need to open our app on an iOS or Android device.
+
+Please be aware that you need iOS version 16.4 or later to have support for web push notifications. Also, Apple only gives you access to the web APIs for this when the PWA is "installed" (added to your home screen).
+
+<img src="./assets/qr-demo.png" alt="Scan this QR-code to visit the example app on Azure directly." />
+
+Open https://icy-island-0a0b23d03.3.azurestaticapps.net/ or scan the QR-code above on your phone and make sure to install it / Add to Home Screen:
 
 <img src="./assets/add-to-homescreen.PNG" alt="Add the app to your home screen to install it.">
 
-Your app is now installed and added to your Home Screen:
-
-<img src="./assets/on-home-screen.PNG" alt="App installed on home screen.">
-
-Then let's open it and press `Request permission`:
+Your app is now installed and added to your Home Screen!
+Then let's open it and press `Request permission`, followed by `Allow`.
 
 <img src="./assets/allow-notifications.PNG" alt="Allow notifications for your app.">
 

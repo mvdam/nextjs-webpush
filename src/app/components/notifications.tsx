@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import styles from '../page.module.css'
-import { CONFIG } from '@/config'
 import Link from 'next/link'
+import { CONFIG } from '@/config'
+import { resetServiceWorker } from '@/utils/sw/service-worker'
+import styles from '../page.module.css'
 import { Notice } from './notice'
 
 const notificationsSupported = () =>
@@ -22,12 +23,8 @@ export default function Notifications() {
     )
   }
 
-  const registerServiceWorker = async () => {
-    return navigator.serviceWorker.register('/service.js')
-  }
-
   const subscribe = async () => {
-    const swRegistration = await registerServiceWorker()
+    const swRegistration = await resetServiceWorker()
 
     try {
       const options = {
