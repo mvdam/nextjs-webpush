@@ -14,10 +14,12 @@
   cursor: pointer;
   background: transparent;
   margin-top: 20px;
+  color: white;
 }
 
 .button:hover {
   border-color: #222;
+  color: #999;
 }
 
 .heading {

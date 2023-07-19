@@ -101,7 +101,7 @@ const showLocalNotification = (title, body, swRegistration) => {
 }
 ```
 
-The first part of this code block is to listen for the `push` event. Every time a push event is coming in it will extract the event data (`await event.data.json()`) and calls the `showLocalNotification` function defined below.
+The first part of this code block is to listen for the `push` event. Every time a push event is coming in it will extract the event data (`await event.data.json()`) and calls the `showLocalNotification` function defined below. We use `self.xxx` here instead of `window` or `this` because `self` refers to the shared Service Worker scope. When your PWA is not open on screen there is no `window` object available so all the communication happens in this Service Worker Scope instead. Please check [this MDN reference](https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/self) for more information.
 
 For the `showLocalNotification` function we need a `title`, `body` and the `swRegistration` (Service Worker Registration) to be able to show the notification on the device. We can also provide an icon to show in the notification. In this case, we use the app icon. By calling the `showNotification` method on the Service Worker Registration we show the notification on the screen of the receiving device:
 
@@ -115,7 +115,7 @@ Now we can work on the Frontend of our app. This is the part the user will see a
 
 ### Setup component
 
-We're going to create a new folder in `./src/app` called `components`. Next, we create a new file `notifications.tsx` inside the newly created folder. You should now have an empty `.tsx` file in `./src/app/components/notifications.tsx`.
+We're going to create a new file called `notifications.tsx` in the directory: `./src/app/components/`.
 
 In this file we will first set up our new `Notifications` component:
 
@@ -165,7 +165,7 @@ The `saveSubscription` function takes the `subscription` and `POST`-s it to our 
 
 ### Setup config file
 
-Because WebPush uses encryption to send and receive messages we have to generate a private and public key for them to work. As mentioned earlier we use the `web-push` library to help us send and receive messages. We can use that library to generate a private and public key for us by running the command:
+Because WebPush uses encryption to send and receive messages we have to generate a private and public key for them to work (also known as Voluntary Application Server Identification or VAPID). As mentioned earlier we use the `web-push` library to help us send and receive messages. We can use that library to generate a private and public key for us by running the command:
 
 ```sh
 npx web-push generate-vapid-keys

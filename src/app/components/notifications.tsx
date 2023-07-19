@@ -30,8 +30,10 @@ export default function Notifications() {
     const swRegistration = await registerServiceWorker()
 
     try {
-      const applicationServerKey = urlB64ToUint8Array(CONFIG.PUBLIC_KEY)
-      const options = { applicationServerKey, userVisibleOnly: true }
+      const options = {
+        applicationServerKey: CONFIG.PUBLIC_KEY,
+        userVisibleOnly: true,
+      }
       const subscription = await swRegistration.pushManager.subscribe(options)
 
       await saveSubscription(subscription)
@@ -40,20 +42,6 @@ export default function Notifications() {
     } catch (err) {
       console.error('Error', err)
     }
-  }
-
-  // encode the base64 public key to Array buffer
-  const urlB64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/')
-    const rawData = atob(base64)
-    const outputArray = new Uint8Array(rawData.length)
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i)
-    }
-    return outputArray
   }
 
   const saveSubscription = async (subscription: PushSubscription) => {
