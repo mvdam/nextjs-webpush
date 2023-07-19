@@ -597,7 +597,7 @@ $ next dev
 - ready started server on 0.0.0.0:3000, url: http://localhost:3000
 ```
 
-If we now open http://localhost:3000 in our browser we should see our frontend running!
+If we now open http://localhost:3000 in our browser we should see our frontend running! Click on `Request permission and subscribe` and `Allow` to receive notifications later on.
 
 <img src="./assets/permission-local.png" alt="Prompt for allowing notifications in Chrome." />
 
