@@ -23,38 +23,6 @@ export default function Notifications() {
     )
   }
 
-  const subscribe = async () => {
-    const swRegistration = await resetServiceWorker()
-
-    try {
-      const options = {
-        applicationServerKey: CONFIG.PUBLIC_KEY,
-        userVisibleOnly: true,
-      }
-      const subscription = await swRegistration.pushManager.subscribe(options)
-
-      await saveSubscription(subscription)
-
-      console.log({ subscription })
-    } catch (err) {
-      console.error('Error', err)
-    }
-  }
-
-  const saveSubscription = async (subscription: PushSubscription) => {
-    const ORIGIN = window.location.origin
-    const BACKEND_URL = `${ORIGIN}/api/push`
-
-    const response = await fetch(BACKEND_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(subscription),
-    })
-    return response.json()
-  }
-
   const requestPermission = async () => {
     if (!notificationsSupported()) {
       return
@@ -77,4 +45,36 @@ export default function Notifications() {
       <Link href="/debug">Debug options</Link>
     </>
   )
+}
+
+const saveSubscription = async (subscription: PushSubscription) => {
+  const ORIGIN = window.location.origin
+  const BACKEND_URL = `${ORIGIN}/api/push`
+
+  const response = await fetch(BACKEND_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(subscription),
+  })
+  return response.json()
+}
+
+const subscribe = async () => {
+  const swRegistration = await resetServiceWorker()
+
+  try {
+    const options = {
+      applicationServerKey: CONFIG.PUBLIC_KEY,
+      userVisibleOnly: true,
+    }
+    const subscription = await swRegistration.pushManager.subscribe(options)
+
+    await saveSubscription(subscription)
+
+    console.log({ subscription })
+  } catch (err) {
+    console.error('Error', err)
+  }
 }

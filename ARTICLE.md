@@ -115,7 +115,7 @@ Now we can work on the Frontend of our app. This is the part the user will see a
 
 ### Setup component
 
-We're going to create a new file called `notifications.tsx` in the directory: `./src/app/components/`.
+We're going to create a new file called `notifications.tsx` in the directory: `./src/app/components/`. Create the folders when they don't exist.
 
 In this file we will first set up our new `Notifications` component:
 
@@ -147,6 +147,7 @@ export default function Notifications() {
 ```
 
 First we define a helper function above our component: `notificationsSupported`. We check if we have access to the `Notification`, `serviceWorker` and `PushManager` API. If not, we return a little instruction for the users of our app to let them first install the PWA on their device.
+
 Further on in this tutorial you will also see usages of `window?.Notification.requestPermission()` by using the [optional chaining operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining). This is required because we can only access `Notification.requestPermission()` when the PWA is installed on the device, but the code itself is instantiated also when not installed.
 
 ### Register Service Worker
@@ -185,7 +186,7 @@ The `saveSubscription` function takes the `subscription` and `POST`-s it to our 
 
 ### Setup config file
 
-Because WebPush uses encryption to send and receive messages we have to generate a private and public key for them to work (also known as Voluntary Application Server Identification or VAPID). As mentioned earlier we use the `web-push` library to help us send and receive messages. We can use that library to generate a private and public key for us by running the command:
+Because WebPush uses encryption to send and receive messages we have to generate a private and public key for them to work (also known as [Voluntary Application Server Identification or VAPID](https://datatracker.ietf.org/doc/html/rfc8292)). As mentioned earlier we use the `web-push` library to help us send and receive messages. We can use that library to generate a private and public key for us by running the command:
 
 ```sh
 npx web-push generate-vapid-keys
@@ -220,6 +221,19 @@ Also, it's highly recommended to store these keys in environment variables inste
 
 If you want to learn more about how Web Push encryption works I can recommend this article from Matt Gaunt: [The Web Push Protocol](https://web.dev/push-notifications-web-push-protocol/).
 
+### Unregistering all service workers
+
+To make development and debugging easier, we will implement a function to unregister all service workers in our app. This helps when you are changing the code of the service worker later on. Normally you have to manually unregister the service worker by using the developer tools of your webbrowser, but we will do it programmatically:
+
+```ts
+export const unregisterServiceWorkers = async () => {
+  const registrations = await navigator.serviceWorker.getRegistrations()
+  await Promise.all(registrations.map((r) => r.unregister()))
+}
+```
+
+This `unregisterServiceWorkers` function retrieves all registrations by calling `navigator.serviceWorker.getRegistrations()`. After that it waits until all service workers are unregistered by using `Promise.all`.
+
 ### Subscribe function
 
 Now we are ready to combine the earlier steps! In our `notifications.tsx` file we're going to create a `subscribe` function to register the Service Worker, subscribe to notifications, and send the subscription to our backend:
@@ -228,6 +242,8 @@ Now we are ready to combine the earlier steps! In our `notifications.tsx` file w
 import { CONFIG } from '@/config'
 
 const subscribe = async () => {
+  await unregisterServiceWorkers()
+
   const swRegistration = await registerServiceWorker()
   await window?.Notification.requestPermission()
 
@@ -247,7 +263,7 @@ const subscribe = async () => {
 }
 ```
 
-First, we register the Service Worker by calling the function we've created earlier. Then we use the `requestPermission` method on the browser `Notification` API to request the user permission to send notifications:
+First, we unregister all previous know service workers for our app. Followed by registering the Service Worker again by calling the function we've created earlier. Then we use the `requestPermission` method on the browser `Notification` API to request the user permission to send notifications:
 
 <img src="./assets/allow-notifications.PNG" alt="Example of requesting permission for sending notifications in iOS.">
 
@@ -294,11 +310,18 @@ export default function Notifications() {
   </>
 }
 
+export const unregisterServiceWorkers = async () => {
+  const registrations = await navigator.serviceWorker.getRegistrations()
+  await Promise.all(registrations.map((r) => r.unregister()))
+}
+
 const registerServiceWorker = async () => {
   return navigator.serviceWorker.register('/service.js')
 }
 
 const subscribe = async () => {
+  await unregisterServiceWorkers()
+
   const swRegistration = await registerServiceWorker()
   await window?.Notification.requestPermission()
 
