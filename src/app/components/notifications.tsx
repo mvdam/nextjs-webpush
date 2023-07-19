@@ -4,6 +4,7 @@ import { useState } from 'react'
 import styles from '../page.module.css'
 import { CONFIG } from '@/config'
 import Link from 'next/link'
+import { Notice } from './notice'
 
 const notificationsSupported = () =>
   'Notification' in window &&
@@ -16,7 +17,9 @@ export default function Notifications() {
   )
 
   if (!notificationsSupported()) {
-    return <div>Please install this app to your home screen first!</div>
+    return (
+      <Notice message="Please install this app on your home screen first!" />
+    )
   }
 
   const registerServiceWorker = async () => {
@@ -82,9 +85,7 @@ export default function Notifications() {
 
   return (
     <>
-      <h3 className={styles.heading}>
-        Notifications permission status: {permission}
-      </h3>
+      <Notice message={`Notifications permission status: ${permission}`} />
       <button onClick={requestPermission} className={styles.button}>
         Request permission and subscribe
       </button>

@@ -87,12 +87,7 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: black;
 }
 
 a {
@@ -100,6 +95,11 @@ a {
   text-decoration: underline;
   font-family: var(--font-mono);
   margin-top: 24px;
+}
+
+p {
+  color: #999;
+  font-family: var(--font-mono);
 }
 
 @media (prefers-color-scheme: dark) {

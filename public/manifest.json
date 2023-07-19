@@ -3,8 +3,8 @@
   "short_name": "WebPush",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#B12A34",
-  "background_color": "#B12A34",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "description": "Example PWA with WebPush!",
   "icons": [
     {
