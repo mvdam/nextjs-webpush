@@ -617,13 +617,13 @@ To fully test our app it needs to be deployed to a server. One of the options is
 
 I would highly recommend using the `standalone` [build option for Next.js](https://nextjs.org/docs/pages/api-reference/next-config-js/output#automatically-copying-traced-files) because without it could trigger some errors during the Azure deployment. Make sure to set `output: 'standalone'` in `./next.config.js`.
 
-Next [create a free Azure account](https://azure.microsoft.com/en-us/free) if you don't have one yet and log in. We will use the free tier so no need to add credit card information :-).
+Next [create a free Azure account](https://azure.microsoft.com/en-us/free) if you don't have one yet and/or [log in](https://portal.azure.com). We will use the free tier so no need to add credit card information :-).
 
 Now click on `Create Resource`:
 
 <img src="./assets/create-resource.png" alt="Click Create Resource." />
 
-Search for `Static Web Apps` and click on `Create` -> `Static Web App`:
+Search for `Static Web App` and click on `Create` -> `Static Web App`:
 
 <img src="./assets/new-static-app.png" alt="Click Create Static Web App." />
 
