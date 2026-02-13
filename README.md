@@ -23,14 +23,6 @@ docker build -t nextjs-docker .
 docker run -p 3000:3000 nextjs-docker
 ```
 
-### Deployed app
-
-This example app is currently deployed on Azure Static Web Apps: https://icy-island-0a0b23d03.3.azurestaticapps.net/.
-
-Instances are shut down when not used for some time. It could take a few seconds to start the app when clicking the link.
-
-<img src="./assets/qr-demo.png" alt="Link to example app.">
-
 ### Questions / Feedback
 
 Feel free to open an issue on this repository when you have a question or feedback. Much appreciated!

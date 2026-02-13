@@ -503,7 +503,7 @@ export const dummyDb: DummyDb = { subscriptions: [] }
 
 // fake Promise to simulate async call
 export const saveSubscriptionToDb = async (
-  subscription: PushSubscription
+  subscription: PushSubscription,
 ): Promise<DummyDb> => {
   dummyDb.subscriptions.push(subscription)
   return Promise.resolve(dummyDb)
@@ -532,7 +532,7 @@ import {
 webpush.setVapidDetails(
   'mailto:test@example.com',
   CONFIG.PUBLIC_KEY,
-  CONFIG.PRIVATE_KEY
+  CONFIG.PRIVATE_KEY,
 )
 
 export async function POST(request: NextRequest) {
@@ -652,13 +652,11 @@ Click on `Go to resource` when the deployment is complete:
 
 Here you have an overview of your app. Click on the URL on the top right to view your deployed app! It can sometimes take a little while before it is fully available.
 
-The example app I've created for this article is available at https://icy-island-0a0b23d03.3.azurestaticapps.net/ ->
-
 <img src="./assets/example-app.png" alt="Example app." />
 
 It has some extra functionality to debug the app and reset the Service Workers.
 
-When you allow notifications and go to our push endpoint: https://icy-island-0a0b23d03.3.azurestaticapps.net/api/push you should get a notification right away!
+When you allow notifications and go to our push endpoint: you should get a notification right away!
 
 ### Github Actions
 
@@ -672,18 +670,12 @@ To finish the whole loop we need to open our app on an iOS or Android device.
 
 Please be aware that you need iOS version 16.4 or later to have support for web push notifications. Also, Apple only gives you access to the web APIs for this when the PWA is "installed" (added to your home screen).
 
-<img src="./assets/qr-demo.png" alt="Scan this QR-code to visit the example app on Azure directly." />
-
-Open https://icy-island-0a0b23d03.3.azurestaticapps.net/ or scan the QR-code above on your phone and make sure to install it / Add to Home Screen:
-
-<img src="./assets/add-to-homescreen.PNG" alt="Add the app to your home screen to install it.">
-
 Your app is now installed and added to your Home Screen!
 Then let's open it and press `Request permission`, followed by `Allow`.
 
 <img src="./assets/allow-notifications.PNG" alt="Allow notifications for your app.">
 
-Now close the app and go to our push endpoint again on your laptop / PC: https://icy-island-0a0b23d03.3.azurestaticapps.net/api/push.
+Now close the app and go to our push endpoint again on your laptop / PC.
 
 If everything went well you now received a WebPush message on your phone!
 
